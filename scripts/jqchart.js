@@ -11,7 +11,7 @@ function init_fields() {
       datafields: [
       	  { name: 'field_name', type: 'text' },
       	  { name: 'field_type', type: 'text' }
-      ], url: url_field,
+      ], url: "csv/" + url_field,
       async: false // Asyncronous Reading
   };
   	  
@@ -36,7 +36,7 @@ function draw_chart() {
   {
       datatype: "csv",
       datafields: fields,
-      url: url,
+      url: "csv/" + url,
       async: false // Asyncronous Reading
   };
 
@@ -65,7 +65,7 @@ function grid2chart( col ) {
     var source = { 
     	datafields: fields,
         datatype: "csv",
-        url: url
+        url: "csv/" + url
     }
   var dataAdapter = new $.jqx.dataAdapter(source);
 
@@ -124,7 +124,7 @@ function init_dropdown() {
   {
       datatype: "csv",
       datafields: [{ name: 'pref'}, { name: 'url'} ],
-      url: url_files,
+      url: "csv/" + url_files,
       async: false // Asyncronous Reading
   };
   var dataAdapter = new $.jqx.dataAdapter(source);
