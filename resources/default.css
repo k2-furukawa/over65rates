@@ -1,0 +1,38 @@
+﻿body {
+  font:  12px sans-serif;
+}
+
+.jqx-chart-axis-text {
+  font: 8px;
+}
+
+.bar {
+  fill: blue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis {
+  font: 9px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#dropdown {
+  font: 24px sans-serif;
+
+}
+
+#map { height: 100% }
+
+strong {
+font-size: 150%;
+color: #000000;
+}
