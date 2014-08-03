@@ -5,8 +5,7 @@ var markers = [];
     function init() {
 
       // Google Mapで利用する初期設定用の変数
-      geocoder = new google.maps.Geocoder();
-      var latlng = new google.maps.LatLng(39, 140);
+      var latlng = new google.maps.LatLng(43.063968,141.347899);
       var opts = {
         zoom: 8,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -30,7 +29,7 @@ var markers = [];
         });
         markers.push(marker);
       } else {
-        alert("Geocode was not successful for the following reason: " + status);
+//        alert("Geocode was not successful for the following reason: " + status);
       }
     });
     }
@@ -43,17 +42,22 @@ function clearMarker() {
 
 function heatmapLayer( rows, label ) {
   var heats = [];
-  for(var i = 0; i < rows.length; i++) {
-    var geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'address': rows[i].city}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-      	  var row = rows[i];
-      	  heats.push({
-      	    location: results[0].geometry.location,
-      	    weight: rows[i][label]
-      	  });
+  for( var idx in rows ) {
+  	var request = 
+  	  "http://maps.googleapis.com/maps/api/geocode/json?sensor=true_or_false&address=" + rows[idx].city;
+  	
+    $.post(
+      request,
+      function(data){
+        heats.push({
+      	  location: new google.maps.LatLng( 
+      	  	  data.results[0].geometry.location.lat, 
+      	  	  data.results[0].geometry.location.lng ),
+      	  weight: rows[idx][label]
+      	});
       }
-    });
+//      "json"
+    );
   }
   var heatmap = new google.maps.visualization.HeatmapLayer({
     radius: 25
@@ -61,3 +65,4 @@ function heatmapLayer( rows, label ) {
   heatmap.setData(heats);
   heatmap.setMap(map);
 }
+

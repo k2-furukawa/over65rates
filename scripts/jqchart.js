@@ -28,9 +28,6 @@ function init_fields() {
 }
 
 function draw_chart() {
-
-
-
   // Configure Grid fields to "fields[]"
   var source =
   {
@@ -80,6 +77,9 @@ function grid2chart( col ) {
     description: '高齢化率 平成17年＝100とした場合',
     xAxis: {
       dataField: 'city',
+  	  unitInterval: 1,
+      textRotationAngle: -90,
+      textRotationPoint: 'top',
       showGridLines: true
     },
     colorScheme: 'scheme01',
@@ -98,6 +98,7 @@ function grid2chart( col ) {
 //        axisSize: 'auto',
         tickMarksColor: '#888888'
       },
+      click: chartClickEventHandle,
       series: [{ dataField: col, displayText: col }]
     }]
   };
@@ -111,10 +112,46 @@ $("#jqxgrid").on("columnclick", function (event)
 {
     var column = event.args.column;
     grid2chart(column.text);
-    var rows = $('#jqxgrid').jqxGrid('getrows');
-    heatmapLayer( rows, column.text );
+//    var rows = $('#jqxgrid').jqxGrid('getrows');
+//    heatmapLayer( rows, column.text );
 
 });
+
+// bar chart click
+function chartClickEventHandle(e) {
+	var data = $('#jqxgrid').jqxGrid('getrowdata', e.elementIndex);
+	createWindow(data.city);
+    
+    var plotdata = new Array;
+    for( key in data ) 
+      if( key != 'city' && key != 'uid' ) 
+        plotdata.push( {year: key, value: data[key] } );
+	
+    // city line chart
+    var settings = {
+      title: data.city,
+      description: "",
+      padding: { left: 5, top: 5, right: 5, bottom: 5 },
+      source: plotdata,
+      categoryAxis: { dataField: 'year', showGridLines: false },
+      colorScheme: 'scheme01',
+      seriesGroups: [
+        {
+          type: 'line',
+          valueAxis: {
+            minValue: 0,
+            maxValue: 280,
+            unitInterval: 10,
+            description: 'Rates'
+          },
+          series: [
+            { dataField: 'value', displayText: 'value'}
+          ]
+        }
+      ]
+    };
+    $('#linechart').jqxChart(settings);
+}
 
 // Create dropdown list
 function init_dropdown() {
@@ -144,23 +181,65 @@ $('#jqxdropdown').bind('change', function (event) {
   var args = event.args;
   if (args) {
     var item = $('#jqxdropdown').jqxDropDownList('getItem', args.index);
-//    if ( args.index != 0 ) {
-//      alert('Selected: ' + item.value);
-      url = item.value;
-      draw_chart();
-      grid2chart('');
-//    }
+    url = item.value;
+    draw_chart();
+    grid2chart('');
   }
+  // set default index
+  $('#jqxdropdown_year').jqxDropDownList('selectIndex', 0);
+  
   // google map
   changeCenter( item.label );
-
-  
 });
 
-function city_heat_wights( text ) {
-  var rows = $('#jqxgrid').jqxGrid('getrows');
-  haetmapLayer( rows, text );
+// bind to 'change' event of dropdown.
+$('#jqxdropdown_year').bind('change', function (event) {
+	
+  var args = event.args;
+  if (args) {
+    var item = $('#jqxdropdown_year').jqxDropDownList('getItem', args.index);
+    grid2chart(item.label);
+  }
 
+});
+
+
+$(document).ready(function () {
+  // Create jqxTabs.
+  $('#jqxTabs').jqxTabs({ width: '100%', height: 400, position: 'top', theme: 'summer' });
+  $('#settings div').css('margin-top', '10px');
+});
+
+//
+function init_dropdown_year() {
+  // items form grid label
+  var source =
+  {
+      datatype: "csv",
+      datafields: [{ name: 'city'}, { name: 'text'} ],
+      url: "csv/" + url_field,
+      async: false // Asyncronous Reading
+  };
+  var dataAdapter = new $.jqx.dataAdapter(source);
+  // Create a jqxDropDownList
+  $("#jqxdropdown_year").jqxDropDownList(
+    { source: dataAdapter,
+      displayMember: "city",
+//      valueMember: "url",
+	  selectedIndex: 0,
+      width: '120px',
+      height: '25px'
+  });
+  // regulation
+  $("#jqxdropdown_year").jqxDropDownList('removeAt', 0 ); 
+}
+
+// show tooltips
+function tooltips() {
+  $("#jqxgrid").jqxTooltip({ position: 'top', content: '年カラムラベルをクリックするとグラフが変わります' });
+  $("#jqxchart").jqxTooltip({ position: 'right', content: 'クリックすると時系列グラフを表示します' });
+  $("#jqxdropdown").jqxTooltip({ position: 'top', content: '地域を選択' });
+  $("#jqxdropdown_year").jqxTooltip({ position: 'top', content: '時系列を選択' });
 }
 
 
@@ -169,3 +248,5 @@ init_dropdown();
 init_fields();
 draw_chart();
 grid2chart('');
+init_dropdown_year();
+tooltips();
