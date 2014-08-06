@@ -112,8 +112,10 @@ $("#jqxgrid").on("columnclick", function (event)
 {
     var column = event.args.column;
     grid2chart(column.text);
-//    var rows = $('#jqxgrid').jqxGrid('getrows');
-//    heatmapLayer( rows, column.text );
+
+  // hetamap layer
+  heatmapLayer( column.text );
+
 
 });
 
@@ -190,6 +192,8 @@ $('#jqxdropdown').bind('change', function (event) {
   
   // google map
   changeCenter( item.label );
+  heatmapLayer( item.label );
+
 });
 
 // bind to 'change' event of dropdown.
@@ -197,10 +201,10 @@ $('#jqxdropdown_year').bind('change', function (event) {
 	
   var args = event.args;
   if (args) {
-    var item = $('#jqxdropdown_year').jqxDropDownList('getItem', args.index);
-    grid2chart(item.label);
+    grid2chart(args.item.label);
+    // hetamap layer
+    heatmapLayer( args.item.label );
   }
-
 });
 
 
@@ -242,11 +246,20 @@ function tooltips() {
   $("#jqxdropdown_year").jqxTooltip({ position: 'top', content: '時系列を選択' });
 }
 
+// post_init
+function post_init() {
+  var item = $('#jqxdropdown_year').jqxDropDownList('getItem', 0);
+  grid2chart(item.label);
+  // hetamap layer
+  heatmapLayer( item.label );
+}
 
 // main function
+loadCities();
 init_dropdown();
 init_fields();
+init_dropdown_year();
 draw_chart();
 grid2chart('');
-init_dropdown_year();
+post_init();
 tooltips();
