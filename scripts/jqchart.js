@@ -207,7 +207,6 @@ $('#jqxdropdown_year').bind('change', function (event) {
   }
 });
 
-
 $(document).ready(function () {
   // Create jqxTabs.
   $('#jqxTabs').jqxTabs({ width: '100%', height: 400, position: 'top', theme: 'summer' });

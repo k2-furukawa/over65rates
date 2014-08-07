@@ -45,23 +45,24 @@ function loadCities() {
       }
     }
   });
+}
 
+// find index of pref
+function findIndexPref( pref ) {
+	var i = 0;
+	for ( ; i < city_location.length ; i++ ) {
+		if( city_location[i].city == pref ) break;
+	}
+	return i;
 }
 
 // 中心位置を変更する
 function changeCenter( city ) {
   var geocoder = new google.maps.Geocoder();
   geocoder.geocode( { 'address': city}, function(results, status) {
-  if (status == google.maps.GeocoderStatus.OK) {
-//    clearMarker();
-    map.setCenter(results[0].geometry.location);
-//    var marker = new google.maps.Marker({
-//      map: map,
-//      position: results[0].geometry.location
-//    });
-//    markers.push(marker);
-  } else {
-      }
+    if (status == google.maps.GeocoderStatus.OK) {
+      map.setCenter(results[0].geometry.location);
+    }
   });
 }
 
@@ -71,6 +72,7 @@ function clearMarker() {
   });
 }
 
+// heatmap layer , "target" is year
 function heatmapLayer( target ) {
   var heats = [];
   clearMarker();
@@ -79,12 +81,16 @@ function heatmapLayer( target ) {
   	  delete heatmap;
   }
   
+  
   // rows form grid
   var rows = $('#jqxgrid').jqxGrid('getrows');
+  //pref index
+  var pref_index = findIndexPref( rows[0].city );
+  
   for( var idx in rows ) {
     var city = rows[idx].city;
     var weight = rows[idx][target] / 2;
-    for( var i in city_location ) {
+    for( var i = pref_index ; i < city_location.length ; i++ ) {
       if( city_location[i].city == city ) {
         heats.push({
           location: city_location[i].location,
