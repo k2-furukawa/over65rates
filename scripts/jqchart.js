@@ -119,9 +119,20 @@ $("#jqxgrid").on("columnclick", function (event)
 
 });
 
-// bar chart click
+$('#jqxgrid').on('rowclick', function ( e ) 
+{
+    var args = e.args;
+    var row = args.rowindex;
+    drawLineChart( args.rowindex );
+}); 
+
 function chartClickEventHandle(e) {
-	var data = $('#jqxgrid').jqxGrid('getrowdata', e.elementIndex);
+  drawLineChart( e.elementIndex );
+}
+// bar chart click
+//function chartClickEventHandle(e) {
+function drawLineChart( index ) {
+	var data = $('#jqxgrid').jqxGrid('getrowdata', index);
 	createWindow(data.city);
     
     var plotdata = new Array;
